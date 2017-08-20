@@ -27,9 +27,8 @@ class MusicController(http.Controller):
         fn_ext = os.path.splitext(Track.path)[1]
 
         Transcoder = request.env['oomusic.transcoder'].search(
-            [('input_formats.name', '=', fn_ext[1:]), ('output_format.name', '=', output_format)],
-            limit=1,
-        )
+            [('output_format.name', '=', output_format)]
+        ).filtered(lambda r: fn_ext[1:] not in r.mapped('black_formats').mapped('name'))
         if Transcoder:
             seek = int(kwargs.get('seek', 0))
             norm = int(kwargs.get('norm', 0))
